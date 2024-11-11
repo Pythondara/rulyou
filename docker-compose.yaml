@@ -1,0 +1,23 @@
+version: '3.7'
+
+networks:
+  production:
+
+services:
+
+  # Note! There should be an environment variable USER_ID set in the host system
+  # for ex. export USER_ID=$(id -u)
+  backend:
+    build:
+      context: .
+      target: production
+    container_name: rulyou
+    ports:
+      - "3000:80"
+      - "8080:8080"
+      - "6001:6001"
+    env_file:
+      - .env
+    networks:
+      - production
+
