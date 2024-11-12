@@ -26,6 +26,7 @@ import {
   UserQueryDto,
 } from './dto';
 import { ErrorResponseDto, SuccessResponseDto } from '../utils/dto';
+import { DeleteUserParamsDto } from './dto/delete-user-params.dto';
 
 @Controller('user')
 export class UserController {
@@ -150,16 +151,18 @@ export class UserController {
 
   @ApiParam({
     name: 'id',
-    type: 'string',
+    type: 'number',
+    required: false,
   })
-  @Delete('/:id')
+  @Delete('/:id?')
   @ApiOperation({
-    summary: 'Delete a user by id',
-    description: 'Delete a user by id',
+    summary: 'Delete a user by id or all users',
+    description: 'Delete a user by id or all users',
   })
   @ApiResponse({ status: '2XX', example: { success: true } })
   @ApiResponse({ status: '4XX', type: ErrorResponseDto })
-  async delete(@Param('id') id: number) {
-    return this.service.delete(id);
+  async delete(@Param('id') id?: number) {
+    const userId = id ? Number(id) : undefined;
+    return this.service.delete(userId);
   }
 }

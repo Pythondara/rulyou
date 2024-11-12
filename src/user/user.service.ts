@@ -9,6 +9,7 @@ import {
   ReadUsersResponseDto,
   UserQueryDto,
 } from './dto';
+import { DeleteUserParamsDto } from './dto/delete-user-params.dto';
 
 @Injectable()
 export class UserService {
@@ -186,24 +187,34 @@ export class UserService {
     return user;
   }
 
-  async delete(id: number): Promise<void> {
-    const user = await this.readById(id);
+  async delete(id?: number) {
+    if (!id) {
+      this.logger.log({ message: 'Deleting all users' });
 
-    this.logger.log({ message: 'Deleting a user', data: user.id });
+      await this.userRepository.clear();
 
-    this.logger.debug({ message: 'Deleting a user', data: user });
+      this.logger.log({ message: 'Users successfully deleted' });
+    } else {
+      const user = await this.readById(id);
 
-    await this.userRepository.delete({ id }).catch((err) => {
-      this.logger.error({
-        message: 'Error retrieving while deleting a user',
-        data: err,
+      this.logger.log({ message: 'Deleting a user', data: user.id });
+
+      this.logger.debug({ message: 'Deleting a user', data: user });
+
+      await this.userRepository.delete({ id }).catch((err) => {
+        this.logger.error({
+          message: 'Error retrieving while deleting a user',
+          data: err,
+        });
+
+        throw new BadRequestException('Error retrieving while deleting a user');
       });
 
-      throw new BadRequestException('Error retrieving while deleting a user');
-    });
+      this.logger.log({ message: 'User successfully deleted', data: user.id });
 
-    this.logger.log({ message: 'User successfully deleted', data: user.id });
+      this.logger.debug({ message: 'User successfully deleted', data: user });
 
-    this.logger.debug({ message: 'User successfully deleted', data: user });
+      return user;
+    }
   }
 }
