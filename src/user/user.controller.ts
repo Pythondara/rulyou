@@ -154,7 +154,7 @@ export class UserController {
     type: 'number',
     required: false,
   })
-  @Delete('/:id?')
+  @Delete('delete/:id?')
   @ApiOperation({
     summary: 'Delete a user by id or all users',
     description: 'Delete a user by id or all users',
